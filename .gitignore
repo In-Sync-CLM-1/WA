@@ -18,6 +18,10 @@ dist-ssr
 .env.production
 !.env.example
 
+# Local migration scratch (may contain credentials, dumps)
+wa-migration/
+fieldsync-migration/
+
 # Claude Code and Supabase temp
 .claude/
 supabase/.temp/
