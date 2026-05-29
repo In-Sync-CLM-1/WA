@@ -1,0 +1,3 @@
+run-automations|run-automations||*/30 * * * *
+launch-scheduled-campaigns|launch-scheduled||* * * * *
+aggregate-daily-analytics|rpc:aggregate_daily_analytics||0 1 * * *
