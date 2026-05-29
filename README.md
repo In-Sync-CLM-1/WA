@@ -14,7 +14,7 @@ A WhatsApp campaign management application for sending bulk messages via Exotel'
 
 ```sh
 # Clone the repository
-git clone https://github.com/insyncclm75-stack/WA.git
+git clone https://github.com/In-Sync-CLM-1/WA.git
 cd WA
 
 # Install dependencies
