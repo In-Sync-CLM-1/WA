@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getExotelCreds } from "../_shared/get-exotel-creds.ts";
+import { GST_RATE, rateFor, billingCategoryFor } from "../_shared/rates.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -373,14 +374,8 @@ async function processStep(
 
     try {
       // Balance check
-      const RATES: Record<string, number> = {
-        marketing: 1.0,
-        utility: 0.2,
-        authentication: 0.2,
-      };
-      const GST_RATE = 0.18;
       const category = template.category?.toLowerCase() || "marketing";
-      const ratePerMsg = RATES[category] || 1.0;
+      const ratePerMsg = rateFor(category);
 
       const { data: wallet } = await supabase
         .from("org_wallets")
@@ -435,18 +430,13 @@ async function processStep(
 
       if (exotelResponse.ok && msgData?.status === "success") {
         // Debit wallet atomically (base + GST in one call)
-        const categoryMap: Record<string, string> = {
-          marketing: "marketing_message",
-          utility: "utility_message",
-          authentication: "auth_message",
-        };
         const gstAmount = Math.round(ratePerMsg * GST_RATE * 100) / 100;
 
         await supabase.rpc("debit_wallet_with_gst", {
           _org_id: orgId,
           _base_amount: ratePerMsg,
           _gst_amount: gstAmount,
-          _category: categoryMap[category] || "marketing_message",
+          _category: billingCategoryFor(category),
           _description: `Automation: ${automation.name} → ${contact.phone_number}`,
           _reference_id: automation.id,
         });

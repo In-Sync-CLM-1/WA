@@ -445,10 +445,16 @@ export default function Billing() {
                 <CardDescription>Simple, transparent pay-per-message. No platform fees.</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4 sm:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   <div className="rounded-lg border border-primary/30 bg-primary/5 p-6 text-center">
                     <MessageSquare className="mx-auto mb-2 h-8 w-8 text-primary" />
-                    <p className="text-sm font-medium text-muted-foreground">All Messages</p>
+                    <p className="text-sm font-medium text-muted-foreground">Marketing Messages</p>
+                    <p className="text-3xl font-bold">Rs 1</p>
+                    <p className="text-xs text-muted-foreground">per message delivered</p>
+                  </div>
+                  <div className="rounded-lg border p-6 text-center">
+                    <MessageSquare className="mx-auto mb-2 h-8 w-8 text-primary/70" />
+                    <p className="text-sm font-medium text-muted-foreground">Utility & Authentication</p>
                     <p className="text-3xl font-bold">Re 0.20</p>
                     <p className="text-xs text-muted-foreground">per message delivered</p>
                   </div>

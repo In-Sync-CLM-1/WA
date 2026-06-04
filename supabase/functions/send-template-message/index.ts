@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getExotelCreds } from "../_shared/get-exotel-creds.ts";
+import { GST_RATE, rateFor, billingCategoryFor } from "../_shared/rates.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -196,25 +197,14 @@ serve(async (req) => {
       .eq("id", conversation_id);
 
     // Debit wallet for template message
-    const GST_RATE = 0.18;
-    const { data: rateRow } = await supabase
-      .from("message_rates")
-      .select("rate_per_message")
-      .eq("category", template.category?.toLowerCase() || "marketing")
-      .maybeSingle();
-    const ratePerMsg = rateRow?.rate_per_message ?? 0.50;
+    const ratePerMsg = rateFor(template.category);
     const gstAmount = Math.round(ratePerMsg * GST_RATE * 100) / 100;
-    const categoryMap: Record<string, string> = {
-      marketing: "marketing_message",
-      utility: "utility_message",
-      authentication: "auth_message",
-    };
 
     await supabase.rpc("debit_wallet_with_gst", {
       _org_id: conversation.org_id,
       _base_amount: ratePerMsg,
       _gst_amount: gstAmount,
-      _category: categoryMap[template.category?.toLowerCase() || "marketing"] || "marketing_message",
+      _category: billingCategoryFor(template.category),
       _description: `Template "${template.name}" to ${contact.phone_number}`,
       _reference_id: conversation_id,
     });

@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getExotelCreds } from "../_shared/get-exotel-creds.ts";
+import { GST_RATE, rateFor } from "../_shared/rates.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -104,9 +105,7 @@ serve(async (req) => {
 
     const orgId = campaign.org_id;
     const messageCategory = campaign.message_category || "marketing";
-    const RATES: Record<string, number> = { marketing: 0.20, utility: 0.20, authentication: 0.20 };
-    const GST_RATE = 0.18;
-    const ratePerMsg = RATES[messageCategory] || 1.0;
+    const ratePerMsg = rateFor(messageCategory);
     const costPerMsg = ratePerMsg * (1 + GST_RATE);
 
     // ── Balance check (per batch) ──

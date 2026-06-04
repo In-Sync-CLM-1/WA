@@ -4,6 +4,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { GST_RATE, rateFor, billingCategoryFor } from "../_shared/rates.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -159,32 +160,25 @@ serve(async (req) => {
         const isNowDelivered = ["delivered", "read"].includes(newStatus);
         if (wasPreDelivery && isNowDelivered && message.org_id) {
           try {
-            const MSG_RATE = 0.20;
-            const GST_RATE = 0.18;
-            const gst = Math.round(MSG_RATE * GST_RATE * 100) / 100;
-
             // Determine billing category from campaign (default marketing)
-            let billingCategory = "marketing_message";
+            let cat = "marketing";
             if (message.campaign_id) {
               const { data: campaign } = await supabase
                 .from("campaigns")
                 .select("message_category")
                 .eq("id", message.campaign_id)
                 .maybeSingle();
-              const cat = campaign?.message_category || "marketing";
-              const catMap: Record<string, string> = {
-                marketing: "marketing_message",
-                utility: "utility_message",
-                authentication: "auth_message",
-              };
-              billingCategory = catMap[cat] || "marketing_message";
+              cat = campaign?.message_category || "marketing";
             }
+
+            const baseAmount = rateFor(cat);
+            const gst = Math.round(baseAmount * GST_RATE * 100) / 100;
 
             await supabase.rpc("debit_wallet_on_delivery", {
               _org_id: message.org_id,
-              _base_amount: MSG_RATE,
+              _base_amount: baseAmount,
               _gst_amount: gst,
-              _category: billingCategory,
+              _category: billingCategoryFor(cat),
               _description: `Message delivered`,
               _reference_id: message.id,
             });
