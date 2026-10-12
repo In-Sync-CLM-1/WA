@@ -56,6 +56,7 @@ import {
   Loader2,
   FileText,
 } from "lucide-react";
+import { useUrlState } from "@/hooks/useUrlState";
 
 interface Conversation {
   id: string;
@@ -124,7 +125,7 @@ export default function Communications() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useUrlState("q", "");
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
   const [loadingConvos, setLoadingConvos] = useState(true);
@@ -135,7 +136,7 @@ export default function Communications() {
   const [labels, setLabels] = useState<ConvoLabel[]>([]);
   const [convoLabels, setConvoLabels] = useState<Record<string, string[]>>({}); // convoId -> labelId[]
   const [orgMembers, setOrgMembers] = useState<OrgMember[]>([]);
-  const [statusFilter, setStatusFilter] = useState<"all" | "open" | "resolved">("all");
+  const [statusFilter, setStatusFilter] = useUrlState<"all" | "open" | "resolved">("status", "all");
 
   // Canned responses
   const [cannedResponses, setCannedResponses] = useState<{ id: string; title: string; content: string; shortcut: string | null }[]>([]);

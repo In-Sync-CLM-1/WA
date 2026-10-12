@@ -24,6 +24,8 @@ import {
   Receipt,
   Loader2,
 } from "lucide-react";
+import { useUrlState } from "@/hooks/useUrlState";
+import { UrlTabs } from "@/components/UrlTabs";
 
 declare global {
   interface Window {
@@ -86,7 +88,7 @@ export default function Billing() {
   const [wallet, setWallet] = useState<WalletData>({ balance: 0, total_credited: 0, total_debited: 0 });
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [txTotal, setTxTotal] = useState(0);
-  const [txPage, setTxPage] = useState(1);
+  const [txPage, setTxPage] = useUrlState("txpage", 1);
   const [usage, setUsage] = useState<UsageData | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -270,7 +272,7 @@ export default function Billing() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="usage">
+        <UrlTabs param="billing_tab" defaultValue="usage">
           <TabsList>
             <TabsTrigger value="usage" className="gap-2"><TrendingUp className="h-4 w-4" /> Usage</TabsTrigger>
             <TabsTrigger value="transactions" className="gap-2"><Receipt className="h-4 w-4" /> Transactions</TabsTrigger>
@@ -478,7 +480,7 @@ export default function Billing() {
               </CardContent>
             </Card>
           </TabsContent>
-        </Tabs>
+        </UrlTabs>
       </div>
 
       {/* Add Funds Dialog */}

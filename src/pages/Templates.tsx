@@ -42,6 +42,7 @@ import {
   Italic,
   Strikethrough,
 } from "lucide-react";
+import { useUrlState } from "@/hooks/useUrlState";
 
 // ─── Constants ───
 
@@ -1042,12 +1043,12 @@ export default function Templates() {
   const { currentOrg } = useOrg();
   const { toast } = useToast();
 
-  const [view, setView] = useState<"list" | "builder">("list");
+  const [view, setView] = useUrlState<"list" | "builder">("view", "list");
   const [templates, setTemplates] = useState<TemplateRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
-  const [filterCategory, setFilterCategory] = useState("all");
-  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterCategory, setFilterCategory] = useUrlState("category", "all");
+  const [filterStatus, setFilterStatus] = useUrlState("status", "all");
 
   const fetchTemplates = async () => {
     if (!currentOrg) return;
