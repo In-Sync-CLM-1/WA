@@ -17,6 +17,7 @@ import {
   FileText, AlertCircle, Loader2, X, Rocket, CheckCircle2, Search,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useUrlState } from "@/hooks/useUrlState";
 
 // ─── Types ───
 
@@ -142,9 +143,9 @@ function CampaignList({ onNew }: { onNew: () => void }) {
   const [launchingId, setLaunchingId] = useState<string | null>(null);
 
   // Filters
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [filterCategory, setFilterCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useUrlState("q", "");
+  const [filterStatus, setFilterStatus] = useUrlState("status", "all");
+  const [filterCategory, setFilterCategory] = useUrlState("category", "all");
 
   const fetchCampaigns = useCallback(async () => {
     if (!currentOrg) return;
